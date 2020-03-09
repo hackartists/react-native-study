@@ -1,0 +1,343 @@
+#+TITLE:     React-Native Basic
+#+AUTHOR:    Jongseok Choi
+#+EMAIL:     hackartists@gmail.com
+
+#+DESCRIPTION: 
+#+KEYWORDS: react-native
+#+LANGUAGE:  en
+#+OPTIONS:   num:t toc:t ::t |:t ^:{} -:t f:t *:t <:t
+#+OPTIONS:   tex:t d:nil todo:t pri:nil tags:nil
+#+OPTIONS:   timestamp:t
+
+# started this on 2020-03-09 Mon
+
+# this allows defining headlines to be exported/not be exported
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+
+# By default I do not want that source code blocks are evaluated on export. Usually
+# I want to evaluate them interactively and retain the original results.
+#+PROPERTY: header-args :eval never-export
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [t,10pt]
+#+LaTeX_CLASS_OPTIONS: [aspectratio=169]
+
+#+COLUMNS: %20ITEM %13BEAMER_env(Env) %6BEAMER_envargs(Args) %4BEAMER_col(Col) %7BEAMER_extra(Extra)
+
+# export second level headings as beamer frames. All headlines below
+# the org-beamer-frame-level (i.e. below H value in OPTIONS), are
+# exported as blocks
+#+OPTIONS: H:3
+#+BEAMER_THEME: Madrid
+#+BEAMER_OUTER_THEME: miniframes [subsection=false]
+
+#+BEAMER_HEADER: \usepackage[utf8]{inputenc}
+#+BEAMER_HEADER: \usepackage{kotex}
+#+BEAMER_HEADER: \usepackage{rotating}
+#+BEAMER_HEADER: \usepackage{graphicx}
+#+BEAMER_HEADER: \usepackage{amssymb,amsmath}
+#+BEAMER_HEADER: \usepackage{amsthm}
+#+BEAMER_HEADER: \usepackage{algorithmic}
+#+BEAMER_HEADER: \usepackage[ruled,linesnumbered]{algorithm2e}
+#+BEAMER_HEADER: \usepackage{listings}
+#+BEAMER_HEADER: \usepackage[titletoc]{appendix}
+#+BEAMER_HEADER: \usepackage{rotating}
+#+BEAMER_HEADER: \usepackage{multirow}
+#+BEAMER_HEADER: \usepackage{array}
+#+BEAMER_HEADER: \usepackage{supertabular}
+#+BEAMER_HEADER: \usepackage{dcolumn}
+#+BEAMER_HEADER: \usepackage{adjustbox}
+#+BEAMER_HEADER: \usepackage{epsfig}
+#+BEAMER_HEADER: \usepackage{subfigure}
+#+BEAMER_HEADER: \usepackage{acronym}
+#+BEAMER_HEADER: \usepackage{url}
+#+BEAMER_HEADER: \usepackage{graphicx}
+#+BEAMER_HEADER: \usepackage{mathtools}
+#+BEAMER_HEADER: \usepackage{longtable}
+#+BEAMER_HEADER: \usepackage[acronym]{glossaries}
+#+BEAMER_HEADER: \usepackage[font=small,skip=0pt]{caption}
+#+BEAMER_HEADER: \usepackage{xcolor}
+#+BEAMER_HEADER: \usepackage{color}
+#+BEAMER_HEADER: \usepackage{colortbl}
+#+BEAMER_HEADER: \usepackage{tikz}
+
+#+BEAMER_HEADER: \AtBeginSection[]{
+#+BEAMER_HEADER: \begin{frame}<beamer>\frametitle{Topic}\tableofcontents[currentsection]\end{frame}
+#+BEAMER_HEADER: \subsection{}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \hypersetup{colorlinks=true, linkcolor=blue}
+#+BEAMER: \setbeamercovered{transparent=30}
+#+BEAMER_HEADER: \usepackage{blindtext}
+#+BEAMER_HEADER: \input{./common/abb}
+#+BEAMER_HEADER: \input{./common/options}
+
+* Introduction
+  # #+BEGIN_EXPORT beamer
+  # \vspace{0.3\textheight}
+  # \begin{center}
+  #   \begin{minipage}[h]{.75\textwidth}
+  #     \centering
+  #     {\Huge Getting Started}
+  #   \end{minipage}
+  # \end{center}
+  # #+END_EXPORT
+** Getting Started
+*** CLI tools
+**** Expo CLI
+     :properties:
+     :beamer_col: 0.5
+     :end:
+ - Expo is a set of tools built around React Native
+   - Expo also has [[https://docs.expo.io/][docs]] you can reference if you have questions specific to the tool.
+   - You can also ask for help at [[https://forums.expo.io/][Expo forums]].
+
+ #+BEGIN_SRC shell-script
+ npm install -g expo-cli
+ expo init AwesomeProject
+
+ cd AwesomeProject
+ npm start 
+ npm run android
+ npm run ios # macOS only
+ #+END_SRC
+
+**** React Native CLI
+     :properties:
+     :beamer_col: 0.5
+     :end:
+ - It requires Xcode or Android Studio to get started
+
+    #+BEGIN_SRC shell-script
+    export ANDROID_HOME=$HOME/Android/Sdk
+    export PATH=$PATH:$ANDROID_HOME/emulator
+    export PATH=$PATH:$ANDROID_HOME/tools
+    export PATH=$PATH:$ANDROID_HOME/tools/bin
+    export PATH=$PATH:$ANDROID_HOME/platform-tools
+    npx react-native init AwesomeProject
+    npx react-native init AwesomeTSProject --template react-native-template-typescript
+    #+END_SRC
+
+
+** Learn the Basics
+*** Learn the Basics
+  - React Native is like React, but it uses *native components* instead of web components as building blocks. 
+    - you need to understand some of the basic React concepts, like *JSX*, components, ~state~, and ~props~
+
+     #+BEGIN_SRC js
+     import React, { Component } from 'react';
+     import { Text, View } from 'react-native';
+
+     export default class HelloWorldApp extends Component {
+       render() {
+         return (
+           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+             <Text>Hello, world!</Text>
+           </View>
+         );
+       }
+     }  
+     #+END_SRC
+
+*** What's going on here?
+ - ES2015 (also known as ES6) is a set of improvements to JavaScript.
+   - but not yet supported by all browsers, so often it isn't used yet in web development.
+   - ~import~, ~from~, ~class~, and ~extends~ in the example above are all ES2015 features.
+
+ - Components
+   - So this code is defining ~HelloWorldApp~, a new ~Component~.
+
+* React Concepts
+** Component Setting
+*** Props
+- Most components can be customized when they are created, with different parameters.
+  - These creation parameters are called ~props~, short for properties.
+  - one basic React Native component is the ~Image~.
+    - When you create an image, you can use a prop named source to control what image it shows.
+
+#+BEGIN_SRC js
+import React, { Component } from 'react';
+import { Image } from 'react-native';
+
+export default class Bananas extends Component {
+  render() {
+    let pic = {
+      uri: 'https://upload.wikimedia.org/a.jpg'
+    };
+    return (
+      <Image source={pic} style={{width: 193, height: 110}}/>
+    );
+  }
+}
+#+END_SRC
+
+*** State
+:properties:
+:BEAMER_opt: allowframebreaks
+:end:
+   - There are two types of data that control a component: ~props~ and ~state~.
+     - ~props~ are set by the parent and they are fixed throughout the lifetime of a component. 
+     - For data that is going to change, we have to use ~state~.
+
+   - You might set state when you have new data from the server.
+     - You can also use a state container like [[https://redux.js.org/][Redux]] or [[https://mobx.js.org/][Mobx]] to control your data flow. 
+     - you can look at the [[https://reactjs.org/docs/react-component.html#setstate][React.Component API]].
+
+#+BEGIN_SRC js
+import React, { Component } from 'react';
+import { Text, View } from 'react-native';
+
+class Blink extends Component {
+
+  componentDidMount(){
+    // Toggle the state every second
+    setInterval(() => (
+      this.setState(previousState => (
+        { isShowingText: !previousState.isShowingText }
+      ))
+    ), 1000);
+  }
+
+  //state object
+  state = { isShowingText: true };
+
+  render() {
+    if (!this.state.isShowingText) {
+      return null;
+    }
+
+    return (
+      <Text>{this.props.text}</Text>
+    );
+  }
+}
+
+export default class BlinkApp extends Component {
+  render() {
+    return (
+      <View>
+        <Blink text='I love to blink' />
+        <Blink text='Yes blinking is so great' />
+        <Blink text='Why did they ever take this out of HTML' />
+        <Blink text='Look at me look at me look at me' />
+      </View>
+    );
+  }
+}
+#+END_SRC
+
+*** Style                                                       :B_quotation:
+:properties:
+:BEAMER_opt: allowframebreaks
+:BEAMER_env: quotation
+:end:
+- All of the core components accept a prop named ~style~.
+  - The style names and values usually match how CSS works on the web.
+  - names are written using camel casing, e.g. ~backgroundColor~ rather than ~background-color~.
+
+#+BEGIN_SRC js
+import React, { Component } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+const styles = StyleSheet.create({
+  bigBlue: {
+    color: 'blue',
+    fontWeight: 'bold',
+    fontSize: 30,
+  },
+  red: {
+    color: 'red',
+  },
+});
+
+export default class LotsOfStyles extends Component {
+  render() {
+    return (
+      <View>
+        <Text style={styles.red}>just red</Text>
+        <Text style={styles.bigBlue}>just bigBlue</Text>
+        <Text style={[styles.bigBlue, styles.red]}>bigBlue, then red</Text>
+        <Text style={[styles.red, styles.bigBlue]}>red, then bigBlue</Text>
+      </View>
+    );
+  }
+}
+#+END_SRC
+
+
+* Layout
+** Height and Width
+*** Fixed Dimensions
+**** code                                                             :BMCOL:
+:properties:
+:BEAMER_col: 0.5
+:end:
+
+#+BEGIN_SRC js
+import React, { Component } from 'react';
+import { View } from 'react-native';
+
+export default class FixedDimensionsBasics extends Component {
+  render() {
+    return (
+      <View>
+        <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+        <View style={{width: 100, height: 100, backgroundColor: 'skyblue'}} />
+        <View style={{width: 150, height: 150, backgroundColor: 'steelblue'}} />
+      </View>
+    );
+  }
+}
+#+END_SRC
+
+
+**** compiled                                                         :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+#+caption: Fixed Dimensions
+[[file:figures/fixed_dim.png]]
+
+*** Flex Dimensions
+**** code                                                             :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+#+BEGIN_SRC js
+import React, { Component } from 'react';
+import { View } from 'react-native';
+
+export default class FlexDimensionsBasics extends Component {
+  render() {
+    return (
+      // Try removing the `flex: 1` on the parent View.
+      // The parent will not have dimensions, so the children can't expand.
+      // What if you add `height: 300` instead of `flex: 1`?
+      <View style={{flex: 1}}>
+        <View style={{flex: 1, backgroundColor: 'powderblue'}} />
+        <View style={{flex: 2, backgroundColor: 'skyblue'}} />
+        <View style={{flex: 3, backgroundColor: 'steelblue'}} />
+      </View>
+    );
+  }
+}
+#+END_SRC
+
+**** compiled                                                         :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+#+caption: Flex Dimensions
+[[file:figures/flex_dim.png]]
+
+** Layout with Flexbox
+
+* Handling Components
+** Handling Text Input
+** Handling Touches
+** Using a ScrollView
+** Using List Views
+
+* Networking
+* More Resources
+
