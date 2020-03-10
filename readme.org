@@ -25,9 +25,6 @@
 
 #+COLUMNS: %20ITEM %13BEAMER_env(Env) %6BEAMER_envargs(Args) %4BEAMER_col(Col) %7BEAMER_extra(Extra)
 
-# export second level headings as beamer frames. All headlines below
-# the org-beamer-frame-level (i.e. below H value in OPTIONS), are
-# exported as blocks
 #+OPTIONS: H:3
 #+BEAMER_THEME: Madrid
 #+BEAMER_OUTER_THEME: miniframes [subsection=false]
@@ -264,13 +261,12 @@ export default class LotsOfStyles extends Component {
 }
 #+END_SRC
 
-
 * Layout
 ** Height and Width
 *** Fixed Dimensions
 **** code                                                             :BMCOL:
 :properties:
-:BEAMER_col: 0.5
+:BEAMER_col: 0.7
 :end:
 
 #+BEGIN_SRC js
@@ -293,7 +289,7 @@ export default class FixedDimensionsBasics extends Component {
 
 **** compiled                                                         :BMCOL:
      :PROPERTIES:
-     :BEAMER_col: 0.5
+     :BEAMER_col: 0.3
      :END:
 #+caption: Fixed Dimensions
 [[file:figures/fixed_dim.png]]
@@ -301,7 +297,7 @@ export default class FixedDimensionsBasics extends Component {
 *** Flex Dimensions
 **** code                                                             :BMCOL:
      :PROPERTIES:
-     :BEAMER_col: 0.5
+     :BEAMER_col: 0.7
      :END:
 #+BEGIN_SRC js
 import React, { Component } from 'react';
@@ -325,12 +321,74 @@ export default class FlexDimensionsBasics extends Component {
 
 **** compiled                                                         :BMCOL:
      :PROPERTIES:
-     :BEAMER_col: 0.5
+     :BEAMER_col: 0.3
      :END:
 #+caption: Flex Dimensions
 [[file:figures/flex_dim.png]]
 
 ** Layout with Flexbox
+
+*** Flex Direction
+- ~flexDirection~ controls the direction in which the children of a node are laid out. 
+  - ~row~ Align children from left to right.
+  - ~column~ (default value) Align children from top to bottom. 
+  - ~row-reverse~ Align children from right to left. 
+  - ~column-reverse~ Align children from bottom to top.
+**** Flex direction code                                              :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.7
+     :END:
+#+BEGIN_SRC js
+import React, { Component } from 'react';
+import { View } from 'react-native';
+
+export default class FlexDirectionBasics extends Component {
+  render() {
+    return (
+      <View style={{flex: 1, flexDirection: 'row'}}>
+        <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+        <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+      </View>
+    );
+  }
+};
+#+END_SRC
+
+**** Compiled direction                                               :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.3
+     :END:
+#+caption: Flex direction
+[[file:figures/flex_direction.png]]
+
+*** Justify Content
+- ~justifyContent~ describes how to align children within the main axis of their container.
+  - ~flex-start(default value)~ Align children of a container to the start of the container's main axis.
+  - ~flex-end~ Align children of a container to the end of the container's main axis.
+  - ~center~ Align children of a container in the center of the container's main axis.
+  - ~space-between~ Evenly space of children across the container's main axis, distributing remaining space between the children.
+  - ~space-around~ Evenly space of children across the container's main axis, distributing remaining space around the children.
+  - ~space-evenly~ Evenly distributed within the alignment container along the main axis.
+*** Justify Content (cont.)
+    #+caption: justifyContent
+    [[file:figures/justcont.png]]
+
+*** Align Items
+
+*** Align Self
+
+*** Align Content
+
+*** Flex Wrap
+
+*** Flex Advanced
+
+*** Width and Height
+
+*** Absolute & Relative Layout
+
+*** 
 
 * Handling Components
 ** Handling Text Input
