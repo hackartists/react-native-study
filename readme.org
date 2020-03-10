@@ -292,6 +292,7 @@ export default class FixedDimensionsBasics extends Component {
      :BEAMER_col: 0.3
      :END:
 #+caption: Fixed Dimensions
+#+attr_latex: :width 0.7\textwidth
 [[file:figures/fixed_dim.png]]
 
 *** Flex Dimensions
@@ -371,6 +372,8 @@ export default class FlexDirectionBasics extends Component {
   - ~space-around~ Evenly space of children across the container's main axis, distributing remaining space around the children.
   - ~space-evenly~ Evenly distributed within the alignment container along the main axis.
 *** Justify Content (cont.)
+    #+label: fig:justcont
+    #+attr_latex: :width \textwidth
     #+caption: justifyContent
     [[file:figures/justcont.png]]
 
