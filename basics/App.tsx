@@ -2,8 +2,16 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableNativeFeedback, TouchableWithoutFeedback, View } from 'react-native';
 
 export default class App extends Component {
-  _onPressButton() {
-    alert('You tapped the button!')
+    _onPressButton() {
+        let result=fetch('https://reactnative.dev/movies.json')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                return responseJson.movies;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        alert(result[0])
   }
 
   _onLongPressButton() {
