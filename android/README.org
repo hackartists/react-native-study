@@ -26,7 +26,7 @@
 #+COLUMNS: %20ITEM %13BEAMER_env(Env) %6BEAMER_envargs(Args) %4BEAMER_col(Col) %7BEAMER_extra(Extra)
 
 #+OPTIONS: H:3
-#+BEAMER_THEME: Madrid
+#+BEAMER_THEME: Darmstadt
 #+BEAMER_OUTER_THEME: miniframes [subsection=false]
 
 #+BEAMER_HEADER: \usepackage[utf8]{inputenc}
@@ -69,22 +69,62 @@
 #+BEAMER_HEADER: \hypersetup{colorlinks=true, linkcolor=blue}
 #+BEAMER: \setbeamercovered{transparent=30}
 #+BEAMER_HEADER: \usepackage{blindtext}
-#+BEAMER_HEADER: \input{./common/abb}
-#+BEAMER_HEADER: \input{./common/options}
+#+BEAMER_HEADER: \input{../common/abb}
+#+BEAMER_HEADER: \input{../common/options}
 
 * React-Native and Android Setup
 
 ** React-Native Setup
 
+*** Android Setup
+ - Downloading [[https://adoptopenjdk.net/][AdoptOpenJDK]] version 8
+ - Downloading [[https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip][Android SDK]]
+ - Installing Android SDK into the PC
+ #+BEGIN_SRC sh 
+     unzip commandlinetools-linux-6200805_latest.zip
+     cd tools
+     export ANDROID_HOME="path-to-install-sdk"
+     bin/sdkmanager --sdk_root=$ANDROID_HOME "tools"
+     export PATH="$ANDROID_HOME/tools/bin:$ANDROID_HOME/tools:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
+     mkdir ~/.android
+     touch ~/.android/repositories.cfg
+     sdkmanager "build-tools;28.0.3" "platforms;android-28"
+ #+END_SRC
+ - Installing AVD targets and running an emulator
+ #+BEGIN_SRC sh
+     sdkmanager "system-images;android-28;google_apis;x86_64" "system-images;android-28;google_apis;x86"
+     avdmanager create avd --package "system-images;android-28;google_apis;x86_64" --name android-28
+     avdmanager list avd
+     emulator @android-28
+ #+END_SRC
+
 *** Installing react-native
+- Installing ~react-native~
+#+BEGIN_SRC sh
+npm i -g react-native  
+#+END_SRC
+- Installing ~watchman~ for monitoring files chages
+#+BEGIN_SRC sh
+  sudo pacman -S watchman ## for Arch linux
+  brew install watchman ## for Mac OS X
 
-** Android Setup
+  ## General linux from source
+  git clone https://github.com/facebook/watchman.git -b v4.9.0 --depth 1
+  cd watchman 
+  ./autogen.sh
+  ./configure
+  make
+  sudo make install
+#+END_SRC
+- Initializing a project and building it
+#+BEGIN_SRC sh
+npx react-native init proj
+cd proj/android
+sudo pacman -S gradle ## brew install gradle
+gralde build
+#+END_SRC
 
-*** Installing android SDK
-
-*** Creating AVD
-
-*** Running an emulator
+*** Running an app on emulator
 
 
 * Android Native Modules
@@ -116,6 +156,7 @@
 ** Sending Events
 
 *** Events to JavaScript
+
 
 * Useful Tips
 
