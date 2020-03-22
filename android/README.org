@@ -1,0 +1,124 @@
+#+TITLE:     React-Native Android
+#+AUTHOR:    Jongseok Choi
+#+EMAIL:     hackartists@gmail.com
+
+#+DESCRIPTION: 
+#+KEYWORDS: react-native
+#+LANGUAGE:  en
+#+OPTIONS:   num:t toc:nil ::t |:t ^:{} -:t f:t *:t <:t
+#+OPTIONS:   tex:t d:nil todo:t pri:nil tags:nil
+#+OPTIONS:   timestamp:t
+
+# started this on 2020-03-09 Mon
+
+# this allows defining headlines to be exported/not be exported
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+
+# By default I do not want that source code blocks are evaluated on export. Usually
+# I want to evaluate them interactively and retain the original results.
+#+PROPERTY: header-args :eval never-export
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [t,10pt]
+#+LaTeX_CLASS_OPTIONS: [aspectratio=169]
+
+#+COLUMNS: %20ITEM %13BEAMER_env(Env) %6BEAMER_envargs(Args) %4BEAMER_col(Col) %7BEAMER_extra(Extra)
+
+#+OPTIONS: H:3
+#+BEAMER_THEME: Madrid
+#+BEAMER_OUTER_THEME: miniframes [subsection=false]
+
+#+BEAMER_HEADER: \usepackage[utf8]{inputenc}
+#+BEAMER_HEADER: \usepackage{kotex}
+#+BEAMER_HEADER: \usepackage{rotating}
+#+BEAMER_HEADER: \usepackage{graphicx}
+#+BEAMER_HEADER: \usepackage{amssymb,amsmath}
+#+BEAMER_HEADER: \usepackage{amsthm}
+#+BEAMER_HEADER: \usepackage{algorithmic}
+#+BEAMER_HEADER: \usepackage[ruled,linesnumbered]{algorithm2e}
+#+BEAMER_HEADER: \usepackage{listings}
+#+BEAMER_HEADER: \usepackage[titletoc]{appendix}
+#+BEAMER_HEADER: \usepackage{rotating}
+#+BEAMER_HEADER: \usepackage{multirow}
+#+BEAMER_HEADER: \usepackage{array}
+#+BEAMER_HEADER: \usepackage{supertabular}
+#+BEAMER_HEADER: \usepackage{dcolumn}
+#+BEAMER_HEADER: \usepackage{adjustbox}
+#+BEAMER_HEADER: \usepackage{epsfig}
+#+BEAMER_HEADER: \usepackage{subfigure}
+#+BEAMER_HEADER: \usepackage{acronym}
+#+BEAMER_HEADER: \usepackage{url}
+#+BEAMER_HEADER: \usepackage{graphicx}
+#+BEAMER_HEADER: \usepackage{mathtools}
+#+BEAMER_HEADER: \usepackage{longtable}
+#+BEAMER_HEADER: \usepackage[acronym]{glossaries}
+#+BEAMER_HEADER: \usepackage[font=small,skip=0pt]{caption}
+#+BEAMER_HEADER: \usepackage{xcolor}
+#+BEAMER_HEADER: \usepackage{color}
+#+BEAMER_HEADER: \usepackage{colortbl}
+#+BEAMER_HEADER: \usepackage{tikz}
+
+#+BEAMER_HEADER: \AtBeginSection[]{
+#+BEAMER_HEADER: \begin{frame}<beamer>\frametitle{Table of Contents}\begin{columns}[t]
+#+BEAMER_HEADER: \begin{column}{.5\textwidth}\tableofcontents[currentsection,sections={1-3}]\end{column}
+#+BEAMER_HEADER: \begin{column}{.5\textwidth}\tableofcontents[currentsection,sections={4-7}]\end{column}
+#+BEAMER_HEADER: \end{columns}\end{frame}
+#+BEAMER_HEADER: \subsection{}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \hypersetup{colorlinks=true, linkcolor=blue}
+#+BEAMER: \setbeamercovered{transparent=30}
+#+BEAMER_HEADER: \usepackage{blindtext}
+#+BEAMER_HEADER: \input{./common/abb}
+#+BEAMER_HEADER: \input{./common/options}
+
+* React-Native and Android Setup
+
+** React-Native Setup
+
+*** Installing react-native
+
+** Android Setup
+
+*** Installing android SDK
+
+*** Creating AVD
+
+*** Running an emulator
+
+
+* Android Native Modules
+
+** Intoduction
+
+*** Setup
+
+*** Enable gradle
+
+** Toast Module
+
+*** Toast basic module
+
+*** Callbacks
+
+*** Promieses
+
+*** Threading
+
+** Argument Types
+
+*** Argument types
+
+** Register the Module
+
+*** Register the Module
+
+** Sending Events
+
+*** Events to JavaScript
+
+* Useful Tips
+
+** Platform Specific Code
+
+** Navigating Vetween Screens

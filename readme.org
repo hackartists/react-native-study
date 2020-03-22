@@ -503,7 +503,7 @@ export default class ScrollExample extends Component {
   render() {
     return (
       <ScrollView>
-      </View>
+      </ScrollView>
     );
   }
 }  
