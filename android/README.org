@@ -162,4 +162,171 @@ gralde build
 
 ** Platform Specific Code
 
-** Navigating Vetween Screens
+*** Platform module
+- When building a cross-platform app, *you'll want to re-use as much code as possible*.
+  - For example you may want to implement separate visual components for Android and iOS.
+
+- React Native provides two ways to organize your code and separate it by platform:
+
+  - Using the Platform module.
+
+  - Using platform-specific file extensions.
+
+
+*** Platform module (platform.select)
+- ~Platform.OS~ returns the value for the platform you are currently running on.
+  - ~Platform.OS~ will be ~ios~ when running on iOS and ~android~ when running on Android.
+
+**** Platform.OS                                                      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+
+#+BEGIN_SRC js
+  import {Platform, StyleSheet} from 'react-native';
+
+  const styles = StyleSheet.create({
+      height: Platform.OS === 'ios' ? 200 : 100,
+  });
+#+END_SRC
+
+#+BEGIN_SRC js
+  const Component = Platform.select({
+      ios: () => require('ComponentIOS'),
+      android: () => require('ComponentAndroid'),
+  })();
+
+      <Component />;
+#+END_SRC
+
+
+**** Platform.select                                                  :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+#+BEGIN_SRC js
+  import {Platform, StyleSheet} from 'react-native';
+
+  const styles = StyleSheet.create({
+      container: {
+          flex: 1,
+          ...Platform.select({
+              ios: {
+                  backgroundColor: 'red',
+              },
+              android: {
+                  backgroundColor: 'blue',
+              },
+          }),
+      },
+  });
+#+END_SRC
+
+***  Detecting the version
+- ~Platform.Version~ can also be used to detect the version.
+  - Android platform version is a google API version.
+  - iOS version is a OS version such as *10.3*
+
+**** the Android version                                              :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+#+BEGIN_SRC js
+  import {Platform} from 'react-native';
+
+  if (Platform.Version === 25) {
+      console.log('Running on Nougat!');
+  }
+#+END_SRC
+
+**** the iOS version                                                  :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+#+BEGIN_SRC js
+  import {Platform} from 'react-native';
+
+  const majorVersionIOS = parseInt(Platform.Version, 10);
+  if (majorVersionIOS <= 9) {
+      console.log('Work around a change in behavior');
+  }  
+#+END_SRC
+
+*** Platform-specific extension
+**** Platform-specific extension                                      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+- When your platform-specific code is more complex, 
+  - you should consider splitting the code out into separate files. 
+  - React Native will detect when a file has a .ios. or .android. extension
+
+#+BEAMER_HEADER: \vfill
+
+#+BEGIN_SRC shell
+  BigButton.ios.js
+  BigButton.android.js
+#+END_SRC
+
+#+BEGIN_SRC js
+  import BigButton from './BigButton';
+#+END_SRC
+
+**** Native-specific extensions                                       :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+- You can also use the .native.js extension when a module needs to be shared between NodeJS/Web and React Native
+  - It has no Android/iOS differences.
+  - The React Native bundler for both Android and iOS (Metro)
+
+#+BEAMER_HEADER: \vfill
+
+#+BEGIN_SRC shell
+  Container.js
+  Container.native.js
+#+END_SRC
+
+#+BEGIN_SRC js
+  import Container from './Container';
+#+END_SRC
+
+
+** Navigating Between Screens
+
+*** React navigation
+
+*** Setup
+#+BEGIN_SRC shell
+  npm install @react-navigation/native @react-navigation/stack
+#+END_SRC
+
+**** For Expo project                                                 :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+- Installing ~Expo~ packages.
+#+BEGIN_SRC shell
+  expo install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view
+#+END_SRC
+
+
+**** For bare project                                                 :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+- Installing ~npm~ packages.
+#+BEGIN_SRC shell
+  npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view
+#+END_SRC
+
+- Installing ~cocoapod~.
+#+BEGIN_SRC shell
+cd ios
+pod install
+cd ..
+#+END_SRC
+
+
+*** Usage
+
