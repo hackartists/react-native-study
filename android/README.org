@@ -142,10 +142,12 @@ gralde build
   - Native modules are usually distributed as npm packages
   - To get the basic scaffolding make sure to read [[https://reactnative.dev/docs/native-modules-setup][Native Modules Setup]]  guide first.
 
-- Three steps
+- For creating a moudle and using it, we need the following steps.
   - We start by creating a native module. 
   - Implement some override features: ~getName~, ~getConstants~ (opt).
   - To expose a method to JavaScript a Java method must be annotated using ~@ReactMethod~
+  - The last step within Java is to register the Module.
+  - Create a javascript wrapper for the java module.
 
 *** A native module
 - Creating a native module and override.
@@ -183,25 +185,278 @@ gralde build
   }
 #+END_SRC
 
+*** ReactMethod
+- expose a method to JavaScript a Java method must be annotated using ~@ReactMethod~
+  - The return type of bridge methods is always ~void~.
+  - React Native bridge is asynchronous
+  - to pass a result to JavaScript is by using callbacks or emitting events
 
-*** Callbacks
-
-*** Promieses
-
-*** Threading
-
-** Argument Types
-
-*** Argument types
-
-** Register the Module
+#+BEGIN_SRC java
+   @ReactMethod
+  public void show(String message, int duration) {
+    Toast.makeText(getReactApplicationContext(), message, duration).show();
+  }
+#+END_SRC
 
 *** Register the Module
+- The last step within Java is to register the Module
+  - This happens in the ~createNativeModules~ of your apps package.
+  - Create a new Java Class named ~CustomToastPackage.java~.
+
+#+BEGIN_SRC java
+  public class CustomToastPackage implements ReactPackage {
+      @Override
+      public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+          return Collections.emptyList();
+      }
+
+      @Override
+      public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+          List<NativeModule> modules = new ArrayList<>();
+
+          modules.add(new ToastModule(reactContext));
+
+          return modules;
+      }
+  }
+#+END_SRC
+
+*** Adding the package
+- The package needs to be provided in the ~getPackages~ method of the ~MainApplication.java~ file.
+  - ~android/app/src/main/java/com/your-app-name/MainApplication.java~
+
+#+BEGIN_SRC java
+  protected List<ReactPackage> getPackages() {
+  @SuppressWarnings("UnnecessaryLocalVariable")
+  List<ReactPackage> packages = new PackageList(this).getPackages();
+  // Packages that cannot be autolinked yet can be added manually here, for example:
+  // packages.add(new MyReactNativePackage());
+  packages.add(new CustomToastPackage()); // <-- Add this line with your package name.
+  return packages;
+}
+#+END_SRC
+
+
+*** Using a native module
+- To access your new functionality from JavaScript, it is common to wrap the native module in a JavaScript module. 
+  - The consumers of your library the need to pull it off of NativeModules each time.
+#+BEGIN_SRC js
+  import {NativeModules} from 'react-native';
+  module.exports = NativeModules.ToastExample;
+#+END_SRC
+
+- Using the wrapper components:
+
+#+BEGIN_SRC js
+  import ToastExample from './ToastExample';
+
+  ToastExample.show('Awesome', ToastExample.SHORT);
+#+END_SRC
+
+** Beyond Toasts
+*** Callbacks
+- Native modules also support a unique kind of argument - a callback. 
+  - It is used to provide the function call result to JavaScript.
+
+#+BEAMER: \vfill
+
+#+BEGIN_SRC java
+  @ReactMethod
+  public void measureLayout(int tag, int ancestorTag,
+                            Callback errorCallback, Callback successCallback) {
+      try {
+          measureLayout(tag, ancestorTag, mMeasureBuffer);
+          float relativeX = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
+          float relativeY = PixelUtil.toDIPFromPixel(mMeasureBuffer[1]);
+          float width = PixelUtil.toDIPFromPixel(mMeasureBuffer[2]);
+          float height = PixelUtil.toDIPFromPixel(mMeasureBuffer[3]);
+          successCallback.invoke(relativeX, relativeY, width, height);
+      } catch (IllegalViewOperationException e) {
+          errorCallback.invoke(e.getMessage());
+      }
+  }
+#+END_SRC
+
+*** Callbacks in javascript
+- This method would be accessed in JavaScript using:
+  - A native module is supposed to invoke its callback only once.
+  - Remember that bridge communication is asynchronous
+
+#+BEAMER: \vfill
+
+#+BEGIN_SRC js
+  UIManager.measureLayout(
+    100,
+    100,
+    (msg) => {
+      console.log(msg);
+    },
+    (x, y, width, height) => {
+      console.log(x + ':' + y + ':' + width + ':' + height);
+    },
+  );
+#+END_SRC
+
+*** Promieses
+- Native modules can also fulfill a promise, which can simplify your JavaScript.
+  - especially when using ES2016's async/await syntax.
+  - When the last parameter of a bridged native method is a ~Promise~, its corresponding JS method will return a JS ~Promise~ object.
+
+#+BEGIN_SRC java
+  @ReactMethod
+  public void measureLayout(int tag, int ancestorTag, Promise promise) {
+    try {
+      measureLayout(tag, ancestorTag, mMeasureBuffer);
+
+      WritableMap map = Arguments.createMap();
+
+      map.putDouble("relativeX", PixelUtil.toDIPFromPixel(mMeasureBuffer[0]));
+      map.putDouble("relativeY", PixelUtil.toDIPFromPixel(mMeasureBuffer[1]));
+      map.putDouble("width", PixelUtil.toDIPFromPixel(mMeasureBuffer[2]));
+      map.putDouble("height", PixelUtil.toDIPFromPixel(mMeasureBuffer[3]));
+
+      promise.resolve(map);
+    } catch (IllegalViewOperationException e) {
+      promise.reject(E_LAYOUT_ERROR, e);
+    }
+  }
+#+END_SRC
+
+*** Promises - javascript
+- The JavaScript counterpart of this method returns a Promise.
+  - you can use the ~await~ keyword within an ~async~ function
+
+#+BEAMER: \vfill
+#+BEGIN_SRC js
+  async function measureLayout() {
+    try {
+      var {relativeX, relativeY, width, height} = await UIManager.measureLayout(
+        100,
+        100,
+      );
+
+      console.log(relativeX + ':' + relativeY + ':' + width + ':' + height);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+#+END_SRC
+
+
+*** Threading
+- Native modules should not have any assumptions about what thread they are being called on
+  - If a blocking call is required, the heavy work should be dispatched to an internally managed worker thread.
+  - Any callbacks distributed from there.
+** Argument types
+*** Argument types
+- The following argument types are supported for methods annotated with ~@ReactMethod~
+  - they directly map to their JavaScript equivalents.
+#+BEAMER: \vfill
+
+#+BEGIN_SRC java
+  Boolean -> Bool
+  Integer -> Number
+  Double -> Number
+  Float -> Number
+  String -> String
+  Callback -> function
+  ReadableMap -> Object
+  ReadableArray -> Array
+#+END_SRC
+
+
 
 ** Sending Events
 
 *** Events to JavaScript
+- Native modules can signal events to JavaScript without being invoked directly.
+  - this is to use the ~RCTDeviceEventEmitter~.
 
+#+BEGIN_SRC java
+  private void sendEvent(ReactContext reactContext,
+                         String eventName,
+                         @Nullable WritableMap params) {
+      reactContext
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+          .emit(eventName, params);
+  }
+#+END_SRC
+
+
+*** Receiving an event
+- JavaScript modules can then register to receive events by ~addListener~ on the ~NativeEventEmitter~ class.
+
+#+BEGIN_SRC js
+  import { NativeEventEmitter, NativeModules } from 'react-native';
+
+  const eventEmitter = new NativeEventEmitter(NativeModules.ToastExample);
+  eventEmitter.addListener('EventReminder', (event) => {
+    console.log(event.eventProperty) // "someValue"
+  }
+#+END_SRC
+
+*** Activity life cycle
+- Implemnt a listener
+
+#+BEGIN_SRC java
+   private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+
+    @Override
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
+      if (requestCode == IMAGE_PICKER_REQUEST) {
+        if (mPickerPromise != null) {
+          if (resultCode == Activity.RESULT_CANCELED) {
+            mPickerPromise.reject(E_PICKER_CANCELLED, "Image picker was cancelled");
+          } else if (resultCode == Activity.RESULT_OK) {
+            Uri uri = intent.getData();
+
+            if (uri == null) {
+              mPickerPromise.reject(E_NO_IMAGE_DATA_FOUND, "No image data found");
+            } else {
+              mPickerPromise.resolve(uri.toString());
+            }
+          }
+
+          mPickerPromise = null;
+        }
+      }
+    }
+  };
+#+END_SRC
+
+
+*** Register listener
+- you must extend BaseActivityEventListener or implement ActivityEventListener. 
+  - you need to register the listener in the module's constructor,
+
+#+BEGIN_SRC java
+   ImagePickerModule(ReactApplicationContext reactContext) {
+    super(reactContext);
+
+    // Add the listener for `onActivityResult`
+    reactContext.addActivityEventListener(mActivityEventListener);
+  }
+#+END_SRC
+
+*** Listening to LifeCycle events
+- Listening to the activity's LifeCycle events such as onResume, onPause etc.
+  - You can listen to the activity's LifeCycle events by implementing the following methods:
+#+BEGIN_SRC java
+@Override
+public void onHostResume() {
+    // Activity `onResume`
+}
+
+@Override
+public void onHostPause() {
+    // Activity `onPause`
+}
+
+@Override
+public void onHostDestroy() {
+    // Activity `onDestroy`
+}  
+#+END_SRC
 
 * Useful Tips
 

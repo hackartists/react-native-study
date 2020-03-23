@@ -14,6 +14,8 @@ import {
   View,
   Text,
   StatusBar,
+  NativeEventEmitter,
+  NativeModules
 } from 'react-native';
 
 import {
@@ -26,15 +28,28 @@ import {
 
 import ToastExample from './native-components/ToastExample';
 
-ToastExample.show('This is a test for Toast message', ToastExample.LONG);
+var message = "hello, app";
+
+ToastExample.show('This is a test for Toast message', ToastExample.LONG, (msg)=>{
+  message = msg;
+});
+
+// async function syncShow() {
+//   message = await ToastExample.showSync('sync test', ToastExample.LONG);
+// }
 
 const App: () => React$Node = () => {
+  const eventEmitter = new NativeEventEmitter(NativeModules.ToastExample);
+  eventEmitter.addListener('EventReminder', (event) => {
+    console.log(event.eventProperty);
+  });
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
         <View>
-          <Text>Hello, toast!</Text>
+          <Text>{message}</Text>
         </View>
       </SafeAreaView>
     </>
