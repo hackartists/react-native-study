@@ -92,10 +92,10 @@
  #+END_SRC
  - Installing AVD targets and running an emulator
  #+BEGIN_SRC sh
-     sdkmanager "system-images;android-28;google_apis;x86_64" "system-images;android-28;google_apis;x86"
-     avdmanager create avd --package "system-images;android-28;google_apis;x86_64" --name android-28
-     avdmanager list avd
-     emulator @android-28
+   sdkmanager "system-images;android-28;google_apis;x86_64" "system-images;android-28;google_apis;x86"
+   avdmanager create avd --package "system-images;android-28;google_apis;x86_64" --name android-28
+   avdmanager list avd
+   emulator @android-28
  #+END_SRC
 
 *** Installing react-native
@@ -125,19 +125,64 @@ gralde build
 #+END_SRC
 
 *** Running an app on emulator
+- We have to install an apk file into an emulator.
+#+BEAMER: \vfill
+
+#+BEGIN_SRC shell
+  adb install path-to-apk/app.apk
+#+END_SRC
 
 
 * Android Native Modules
 
-** Intoduction
-
-*** Setup
-
-*** Enable gradle
-
 ** Toast Module
 
 *** Toast basic module
+- Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet.
+  - Native modules are usually distributed as npm packages
+  - To get the basic scaffolding make sure to read [[https://reactnative.dev/docs/native-modules-setup][Native Modules Setup]]  guide first.
+
+- Three steps
+  - We start by creating a native module. 
+  - Implement some override features: ~getName~, ~getConstants~ (opt).
+  - To expose a method to JavaScript a Java method must be annotated using ~@ReactMethod~
+
+*** A native module
+- Creating a native module and override.
+  - ~getName~ is mandatory for ~ReactContextBaseJavaModule~.
+  - ~getConstants~ is optional override method.
+
+#+BEGIN_SRC java
+  public class ToastModule extends ReactContextBaseJavaModule {
+      private static ReactApplicationContext reactContext;
+      private static final String DURATION_SHORT_KEY = "SHORT";
+      private static final String DURATION_LONG_KEY = "LONG";
+
+      ToastModule(ReactApplicationContext context) {
+          super(context);
+          reactContext = context;
+      }
+
+      @Override
+      public String getName() {
+          return "ToastExample";
+      }
+
+      @Override
+      public Map<String, Object> getConstants() {
+          final Map<String, Object> constants = new HashMap<>();
+          constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
+          constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
+          return constants;
+      }
+
+      @ReactMethod
+      public void show(String message, int duration) {
+          Toast.makeText(getReactApplicationContext(), message, duration).show();
+      }
+  }
+#+END_SRC
+
 
 *** Callbacks
 
@@ -295,8 +340,8 @@ gralde build
 ** Navigating Between Screens
 
 *** React navigation
+- The community solution to navigation is a standalone library 
 
-*** Setup
 #+BEGIN_SRC shell
   npm install @react-navigation/native @react-navigation/stack
 #+END_SRC
@@ -329,4 +374,41 @@ cd ..
 
 
 *** Usage
+- There are 2 screens (Home and Profile) defined using the Stack.Screen component.
 
+#+BEAMER: \vfill
+
+#+BEGIN_SRC js
+  import * as React from 'react';
+  import {NavigationContainer} from '@react-navigation/native';
+  import {createStackNavigator} from '@react-navigation/stack';
+  const Stack = createStackNavigator();
+
+  function MyStack() {
+    return (
+        <NavigationContainer>
+        <Stack.Navigator>
+        <Stack.Screen name="Home" component={Home} options={{title: 'Welcome'}} />
+        <Stack.Screen name="Profile" component={Profile} />
+        </Stack.Navigator>
+        </NavigationContainer>
+    );
+  }
+#+END_SRC
+
+*** HomeScreen Implementation
+- Each screen takes a component prop that is a React component.
+  - The views in the stack navigator use native components and the Animated library to deliver 60fps animations
+
+#+BEAMER: \vfill
+
+#+BEGIN_SRC js
+  function HomeScreen({navigation}) {
+    return (
+        <Button
+      title="Go to Jane's profile"
+      onPress={() => navigation.navigate('Profile', {name: 'Jane'})}
+        />
+    );
+  }
+#+END_SRC
