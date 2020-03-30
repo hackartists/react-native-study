@@ -30,9 +30,7 @@ import ToastExample from './native-components/ToastExample';
 
 var message = "hello, app";
 
-ToastExample.show('This is a test for Toast message', ToastExample.LONG, (msg)=>{
-  message = msg;
-});
+ToastExample.show('This is a test for Toast message', ToastExample.LONG);
 
 // async function syncShow() {
 //   message = await ToastExample.showSync('sync test', ToastExample.LONG);
@@ -49,7 +47,7 @@ const App: () => React$Node = () => {
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
         <View>
-          <Text>{message}</Text>
+          <Text>asd</Text>
         </View>
       </SafeAreaView>
     </>

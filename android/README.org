@@ -61,8 +61,8 @@
 
 #+BEAMER_HEADER: \AtBeginSection[]{
 #+BEAMER_HEADER: \begin{frame}<beamer>\frametitle{Table of Contents}\begin{columns}[t]
-#+BEAMER_HEADER: \begin{column}{.5\textwidth}\tableofcontents[currentsection,sections={1-3}]\end{column}
-#+BEAMER_HEADER: \begin{column}{.5\textwidth}\tableofcontents[currentsection,sections={4-7}]\end{column}
+#+BEAMER_HEADER: \begin{column}{.5\textwidth}\tableofcontents[currentsection,sections={1-2}]\end{column}
+#+BEAMER_HEADER: \begin{column}{.5\textwidth}\tableofcontents[currentsection,sections={3-7}]\end{column}
 #+BEAMER_HEADER: \end{columns}\end{frame}
 #+BEAMER_HEADER: \subsection{}
 #+BEAMER_HEADER: }
@@ -71,6 +71,11 @@
 #+BEAMER_HEADER: \usepackage{blindtext}
 #+BEAMER_HEADER: \input{../common/abb}
 #+BEAMER_HEADER: \input{../common/options}
+
+#+BEAMER: \begin{frame}<beamer>\frametitle{Table of Connnptents}\begin{columns}[t]
+#+BEAMER: \begin{column}{.5\textwidth}\tableofcontents[sections={1-2}]\end{column}
+#+BEAMER: \begin{column}{.5\textwidth}\tableofcontents[sections={3-7}]\end{column}
+#+BEAMER: \end{columns}\end{frame}
 
 * React-Native and Android Setup
 

@@ -1,0 +1,812 @@
+#+TITLE:     React-Native Workflow and Android
+#+AUTHOR:    Jongseok Choi
+#+EMAIL:     hackartists@gmail.com
+
+#+DESCRIPTION: 
+#+KEYWORDS: react-native
+#+LANGUAGE:  en
+#+OPTIONS:   num:t toc:nil ::t |:t ^:{} -:t f:t *:t <:t
+#+OPTIONS:   tex:t d:nil todo:t pri:nil tags:nil
+#+OPTIONS:   timestamp:t
+
+# started this on 2020-03-09 Mon
+
+# this allows defining headlines to be exported/not be exported
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+
+# By default I do not want that source code blocks are evaluated on export. Usually
+# I want to evaluate them interactively and retain the original results.
+#+PROPERTY: header-args :eval never-export
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [t,10pt]
+#+LaTeX_CLASS_OPTIONS: [aspectratio=169]
+
+#+COLUMNS: %20ITEM %13BEAMER_env(Env) %6BEAMER_envargs(Args) %4BEAMER_col(Col) %7BEAMER_extra(Extra)
+
+#+OPTIONS: H:3
+#+BEAMER_THEME: Darmstadt
+#+BEAMER_OUTER_THEME: miniframes [subsection=false]
+
+#+BEAMER_HEADER: \usepackage[utf8]{inputenc}
+#+BEAMER_HEADER: \usepackage{kotex}
+#+BEAMER_HEADER: \usepackage{rotating}
+#+BEAMER_HEADER: \usepackage{graphicx}
+#+BEAMER_HEADER: \usepackage{amssymb,amsmath}
+#+BEAMER_HEADER: \usepackage{amsthm}
+#+BEAMER_HEADER: \usepackage{algorithmic}
+#+BEAMER_HEADER: \usepackage[ruled,linesnumbered]{algorithm2e}
+#+BEAMER_HEADER: \usepackage{listings}
+#+BEAMER_HEADER: \usepackage[titletoc]{appendix}
+#+BEAMER_HEADER: \usepackage{rotating}
+#+BEAMER_HEADER: \usepackage{multirow}
+#+BEAMER_HEADER: \usepackage{array}
+#+BEAMER_HEADER: \usepackage{supertabular}
+#+BEAMER_HEADER: \usepackage{dcolumn}
+#+BEAMER_HEADER: \usepackage{adjustbox}
+#+BEAMER_HEADER: \usepackage{epsfig}
+#+BEAMER_HEADER: \usepackage{subfigure}
+#+BEAMER_HEADER: \usepackage{acronym}
+#+BEAMER_HEADER: \usepackage{url}
+#+BEAMER_HEADER: \usepackage{graphicx}
+#+BEAMER_HEADER: \usepackage{mathtools}
+#+BEAMER_HEADER: \usepackage{longtable}
+#+BEAMER_HEADER: \usepackage[acronym]{glossaries}
+#+BEAMER_HEADER: \usepackage[font=small,skip=0pt]{caption}
+#+BEAMER_HEADER: \usepackage{xcolor}
+#+BEAMER_HEADER: \usepackage{color}
+#+BEAMER_HEADER: \usepackage{colortbl}
+#+BEAMER_HEADER: \usepackage{tikz}
+#+BEAMER_HEADER: \usepackage{lmodern}
+
+# #+BEAMER_HEADER: \DeclareRobustCommand\ttfamily
+# #+BEAMER_HEADER:         {\not@math@alphabet\ttfamily\mathtt
+# #+BEAMER_HEADER:          \fontfamily\ttdefault\LARGE\selectfont}
+
+#+BEAMER_HEADER: \setbeamercolor{footline}{fg=blue}
+#+BEAMER_HEADER: \setbeamerfont{footline}{series=\bfseries}
+#+BEAMER_HEADER: \addtobeamertemplate{navigation symbols}{}{%
+#+BEAMER_HEADER:     \usebeamerfont{footline}%
+#+BEAMER_HEADER:     \usebeamercolor[fg]{footline}%
+#+BEAMER_HEADER:     \hspace{1em}%
+#+BEAMER_HEADER:     \insertframenumber/\inserttotalframenumber
+#+BEAMER_HEADER: }
+
+#+BEAMER_HEADER: \AtBeginSection[]{
+#+BEAMER_HEADER: \begin{frame}<beamer>\frametitle{Table of Contents}\begin{columns}[t]
+#+BEAMER_HEADER: \begin{column}{.5\textwidth}\tableofcontents[currentsection,sections={1-1}]\end{column}
+#+BEAMER_HEADER: \begin{column}{.5\textwidth}\tableofcontents[currentsection,sections={2-7}]\end{column}
+#+BEAMER_HEADER: \end{columns}\end{frame}
+#+BEAMER_HEADER: \subsection{}
+#+BEAMER_HEADER: }
+#+BEAMER_HEADER: \hypersetup{colorlinks=true, linkcolor=blue}
+#+BEAMER: \setbeamercovered{transparent=30}
+#+BEAMER_HEADER: \usepackage{blindtext}
+#+BEAMER_HEADER: \input{common/abb}
+#+BEAMER_HEADER: \input{common/options}
+
+#+BEAMER: \begin{frame}<beamer>\frametitle{Table of Connnptents}\begin{columns}[t]
+#+BEAMER: \begin{column}{.5\textwidth}\tableofcontents[sections={1-1}]\end{column}
+#+BEAMER: \begin{column}{.5\textwidth}\tableofcontents[sections={2-7}]\end{column}
+#+BEAMER: \end{columns}\end{frame}
+
+* Workflow
+
+** Running On Device
+
+*** Enable debugging over USB
+- Enable debugging over USB
+  - Enable the "Developer options" menu by going to Settings → About phone.
+  - Tap the Build number row at the bottom seven times.
+  - Go back to Settings → System → Developer options to enable "USB debugging".
+
+*** USB Settings for Android devices
+
+**** USB connection setting                                           :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+
+ - Plug in tour device via USB
+   - Go ahead and plug in your device via USB.
+   - check the manufacturer code by using ~lsusb~
+   - In this case, ~22b8~ is the identifier for Motorola.
+
+ #+BEGIN_SRC shell
+   $ lsusb
+   Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+   Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+   Bus 001 Device 003: ID 22b8:2e76 Motorola PCS
+   Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+   Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+   Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+   Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+ #+END_SRC
+
+**** Check device                                                     :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+ - You'll need to input this into your udev rules in order to get up and running:
+
+ #+BEGIN_SRC shell
+   echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"' | sudo tee /etc/udev/rules.d/51-android-usb.rules
+ #+END_SRC
+     
+ - Check that your device is properly connecting to ADB, the Android Debug Bridge.
+
+#+BEGIN_SRC shell
+  $ adb devices
+  List of devices attached
+  emulator-5554 offline   # Google emulator
+  14ed2fcc device         # Physical device
+#+END_SRC
+
+*** Running your app
+- Type the following in your command prompt to install and launch your app on the device
+
+#+BEGIN_SRC shell
+  npx react-native run-android
+#+END_SRC
+
+**** Hint
+You can also use the React Native CLI to generate and run a Release build ~npx react-native run-android --variant=release~.
+
+*** Connecting to the development server
+- You can also iterate quickly on a device by connecting to the development server
+  - Access to a USB cable
+  - Access to a Wi-Fi network
+
+*** Using adb reverse (recommended)
+- You can use this method if your device is running Android 5.0 (Lollipop) or newer.
+  - It has USB debugging enabled.
+  - It is connected via USB to your development machine.
+
+#+BEGIN_SRC shell
+  adb -s <device name> reverse tcp:8081 tcp:8081
+#+END_SRC
+
+- To find the device name, run the following adb command:
+#+BEGIN_SRC shell
+  adb devices
+#+END_SRC
+
+
+*** Connect via Wi-Fi
+- You'll first need to install the app on your device using a USB cable.
+  - You'll need your development machine's current IP address before proceeding.
+
+** Debugging
+
+*** Accessing the In-App Developer Menu
+- iOS
+  - by shaking your device or by selecting "Shake Gesture" inside the Hardware menu in the iOS Simulator.
+  - ~⌘D~ keyboard shortcut when your app is running in the iOS Simulator, or ~⌘M~ when running in an Android emulator on Mac OS.
+- Android
+  - you can run the command ~adb shell input keyevent 82~ to open the dev menu
+
+*** In-app Errors and Warnings
+
+**** Errors                                                           :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+- errors are displayed in a full screen alert with a red background inside your app. 
+  - This screen is known as a RedBox.
+  - You can use ~console.error()~ to manually trigger one.
+
+**** Warnings                                                         :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+- Warnings will be displayed on screen with a yellow background.
+  - These alerts are known as YellowBoxes.
+  - you can use ~console.warn()~ to trigger a YellowBox.
+  - YellowBoxes can be disabled during development by using ~console.disableYellowBox = true;~.
+
+**** For Release
+RedBoxes and YellowBoxes are automatically disabled in release (production) builds.
+
+*** Chrome Developer Tools
+- To debug, open a new tab at http://localhost:8081/debugger-ui.
+  - Select Tools → Developer Tools from the Chrome Menu.
+  - Enable ~Pause On Caught Exceptions~ for a better debugging experience.
+- Debugging using a custom JavaScript debugger
+  - Set the REACT_DEBUGGER environment variable
+#+BEGIN_SRC shell
+  export REACT_DEBUGGER="node /path/to/launchDebugger.js --port 2345 --type ReactNative"
+  node /path/to/launchDebugger.js --port 2345 --type ReactNative /path/to/reactNative/app
+#+END_SRC
+
+**** Note
+They shouldn't produce more than 200 kilobytes of output.
+
+*** React Developer Tools
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks,label=
+:END:
+- You can use the standalone version of React Developer Tools to debug the React component hierarchy.
+  - Version 4 of ~react-devtools~ requires ~react-native~ version 0.62 or higher.
+
+#+BEGIN_SRC shell
+  npm install -g react-devtools
+  react-devtools
+#+END_SRC
+
+- Integration with react native inspector
+  - Open the in-app developer menu.
+  - Choose ~"Toggle Inspector"~.
+
+#+BEAMER: \framebreak
+
+- Inspecting component instances
+  - First, follow the instructions for debugging in Chrome to open the Chrome console.
+  - The dropdown in the top left corner of the Chrome console says ~debuggerWorker.js~.
+  - Then select a React component in React DevTools.
+  - It will be available as ~$r~ in the Chrome console
+
+- Performance monitoring
+  - Selecting "Perf Monitor" in the Developer Menu.
+
+- Debugging application state
+  - ~Reactotron~ is an open-source desktop app that allows you to inspect Redux or MobX-State-Tree application state.
+  - https://github.com/infinitered/reactotron
+
+*** Native Debugging
+- Accessing console logs
+  - You can display the console logs for an iOS or Android app.
+  - You may also access these through ~Debug → Open System Log...~ in the iOS Simulator.
+  - ~adb logcat *:S ReactNative:V ReactNativeJS:V~ in a terminal for Android.
+
+#+BEGIN_SRC shell
+  $ npx react-native log-ios
+  $ npx react-native log-android
+#+END_SRC
+
+- Debugging on a device with Chrome
+  - On iOS devices, open the file ~RCTWebSocketExecutor.m~ and change "localhost" to the IP address of your computer.
+  - On Android 5.0+ devices connected via USB, ~adb reverse tcp:8081 tcp:8081~.
+  - Alternatively, select "Dev Settings" from the Developer Menu, then update the "Debug server host for device".
+
+- Debugging native code
+  - When working with native code, you can launch the app from Android Studio or Xcode.
+
+** Upgrading to new React Native
+
+*** React native projects
+- There's currently two ways for upgrading your React Native project:
+  - by using React Native CLI
+  - manually with Upgrade Helper.
+
+*** React native CLI
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks,label=
+:END:
+- The React Native CLI comes with ~upgrade~ command that provides a one-step operation.
+  - it internally uses ~rn-diff-purge~ project to find out which files need to be created, removed or modified.
+
+#+BEAMER: \framebreak
+
+**** Run the ~upgrade~ command                                        :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.4
+     :END:
+- The upgrade command works on top of Git by using ~git apply~ with 3-way merge.
+
+#+BEGIN_SRC shell
+  npx react-native upgrade
+  npx react-native upgrade 0.61.0-rc.0
+#+END_SRC
+
+**** Resolve the conflicts                                            :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :END:
+- Conflicted files include delimiters which make very clear where the changes come from. 
+
+#+BEGIN_SRC json
+  13B07F951A680F5B00A75B9A /* Release */ = {
+  isa = XCBuildConfiguration;
+  buildSettings = {
+    ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+<<<<<<< ours
+    CODE_SIGN_IDENTITY = "iPhone Developer";
+    FRAMEWORK_SEARCH_PATHS = (
+      "$(inherited)",
+      "$(PROJECT_DIR)/HockeySDK.embeddedframework",
+      "$(PROJECT_DIR)/HockeySDK-iOS/HockeySDK.embeddedframework",
+    );
+=======
+    CURRENT_PROJECT_VERSION = 1;
+>>>>>>> theirs
+    HEADER_SEARCH_PATHS = (
+      "$(inherited)",
+      /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+      "$(SRCROOT)/../node_modules/react-native/React/**",
+      "$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+    );
+#+END_SRC
+
+*** Upgrade helper
+The [[https://react-native-community.github.io/upgrade-helper][Upgrade Helper]] is a web tool to help you out.
+
+- Select the versions
+  - Select from and to which version you wish to upgrade.
+- Upgrade dependencies
+  - The first file that is shown is the ~package.json~.
+
+#+BEGIN_SRC shell
+  # {{VERSION}} and {{REACT_VERSION}} are the release versions showing in the diff
+  yarn add react-native@{{VERSION}}
+  yarn add react@{{REACT_VERSION}}
+#+END_SRC
+
+- Upgrade tour project files
+
+#+BEGIN_SRC shell
+  npx react-native upgrade
+#+END_SRC
+
+* Android Guide
+
+** Native UI Components
+*** ImageView Example
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+- Native views are created and manipulated by extending ~ViewManager~ or more commonly ~SimpleViewManager~
+  1. Create the ViewManager subclass.
+  2. Implement the ~createViewInstance~ method
+  3. Expose view property setters using ~@ReactProp~ (or @ReactPropGroup) annotation
+  4. Register the manager in ~createViewManagers~ of the applications package.
+  5. Implement the JavaScript module
+
+#+BEAMER: \framebreak
+
+1. we create view manager class ~ReactImageManager~ that extends ~SimpleViewManager~.
+   - ~ReactImageView~ is the type of object managed by the manager.
+   - Name returned by ~getName~ is used to reference the native view type from JavaScript.
+
+#+BEGIN_SRC java
+    public class ReactImageManager extends SimpleViewManager<ReactImageView> {
+
+        public static final String REACT_CLASS = "RCTImageView";
+        ReactApplicationContext mCallerContext;
+
+        public ReactImageManager(ReactApplicationContext reactContext) {
+            mCallerContext = reactContext;
+        }
+
+        @Override
+        public String getName() {
+            return REACT_CLASS;
+        }  
+    }
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+2. [@2] Implement method ~createViewInstance~
+   - Views are created in the ~createViewInstance~ method.
+   - Any properties will be set via a follow up call to ~updateView~.
+
+#+BEGIN_SRC java
+   @Override
+  public ReactImageView createViewInstance(ThemedReactContext context) {
+    return new ReactImageView(context, Fresco.newDraweeControllerBuilder(), null, mCallerContext);
+  }
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+3. [@3]Expose view property setters using ~@ReactProp~ or ~@ReactPropGroup~ annotation.
+   - Properties should be exposed as setter method annotated with ~@ReactProp~ (or ~@ReactPropGroup~)
+   - Supported types: ~boolean~, ~int~, ~float~, ~double~, ~String~, ~Boolean~, ~Integer~, ~ReadableArray~, ~ReadableMap~
+   - ~@ReactProp~ has one obligatory argument ~name~ of type ~String~.
+   - *IMPORTANT!* in ReactJS updating the property value will result in setter method call.
+
+#+BEGIN_SRC java
+  @ReactProp(name = "src")
+  public void setSrc(ReactImageView view, @Nullable ReadableArray sources) {
+    view.setSource(sources);
+  }
+
+  @ReactProp(name = "borderRadius", defaultFloat = 0f)
+  public void setBorderRadius(ReactImageView view, float borderRadius) {
+    view.setBorderRadius(borderRadius);
+  }
+
+  @ReactProp(name = ViewProps.RESIZE_MODE)
+  public void setResizeMode(ReactImageView view, @Nullable String resizeMode) {
+    view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
+  }
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+4. [@4] Register the ~ViewManager~
+   - The final Java step is to register the ViewManager to the application via ~createViewManagers~.
+#+BEGIN_SRC java
+  @Override
+  public List<ViewManager> createViewManagers(
+                            ReactApplicationContext reactContext) {
+    return Arrays.<ViewManager>asList(
+      new ReactImageManager()
+    );
+  }
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+5. [@5] Implement the JavaScript module
+   - Defines the interface layer between Java and JavaScript.
+   - The ~requireNativeComponent~ function takes the name of the native view.
+
+#+BEGIN_SRC js
+  // ImageView.js
+
+  import {requireNativeComponent} from 'react-native';
+
+  /**
+   ,* Composes `View`.
+   ,*
+   ,* - src: string
+   ,* - borderRadius: number
+   ,* - resizeMode: 'cover' | 'contain' | 'stretch'
+   ,*/
+  module.exports = requireNativeComponent('RCTImageView');
+#+END_SRC
+
+*** Events
+    :PROPERTIES:
+    :BEAMER_opt: allowframebreaks,label=
+    :END:
+
+- How do we deal with events from the user, like pinch-zooms or panning? 
+  - When a native event occurs the native code should issue an event to the JavaScript representation.
+  - The two views are linked with the value returned from the ~getId()~ method.
+
+#+BEGIN_SRC js
+  class MyCustomView extends View {
+      public void onReceiveNativeEvent() {
+          WritableMap event = Arguments.createMap();
+          event.putString("message", "MyMessage");
+          ReactContext reactContext = (ReactContext)getContext();
+          reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+              getId(),
+              "topChange",
+              event);
+      }
+  }
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+- Mapping the ~topChange~ event name to the ~onChange~ callback prop in JavaScript
+  - Register it by overriding the ~getExportedCustomBubblingEventTypeConstants~ method in your ~ViewManager~.
+
+#+BEGIN_SRC js
+  public class ReactImageManager extends SimpleViewManager<MyCustomView> {
+      public Map getExportedCustomBubblingEventTypeConstants() {
+          return MapBuilder.builder()
+              .put(
+                  "topChange",
+                  MapBuilder.of(
+                      "phasedRegistrationNames",
+                      MapBuilder.of("bubbled", "onChange")))
+              .build();
+      }
+  }
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+- This callback is invoked with the raw event.
+  - we typically process in the wrapper component.
+
+#+BEGIN_SRC js
+  class MyCustomView extends React.Component {
+      constructor(props) {
+          super(props);
+          this._onChange = this._onChange.bind(this);
+      }
+      _onChange(event: Event) {
+          if (!this.props.onChangeMessage) {
+              return;
+          }
+          this.props.onChangeMessage(event.nativeEvent.message);
+      }
+      render() {
+          return <RCTMyCustomView {...this.props} onChange={this._onChange} />;
+      }
+  }
+  MyCustomView.propTypes = {
+      onChangeMessage: PropTypes.func,
+  };
+
+  var RCTMyCustomView = requireNativeComponent(`RCTMyCustomView`);
+#+END_SRC
+
+
+** Headless JS
+*** Headless JS
+    :PROPERTIES:
+    :BEAMER_opt: allowframebreaks,label=
+    :END:
+
+- Headless JS is a way to run tasks in JavaScript while your app is in the background.
+  - It can be used, for example, to sync fresh data, handle push notifications, or play music.
+  - A task is a async function that you register on ~AppRegistry~.
+  - Once your task completes, React Native will go into ~paused~ mode.
+
+#+BEGIN_SRC js
+  import {AppRegistry} from 'react-native';
+  AppRegistry.registerHeadlessTask('SomeTaskName', () => someTask);
+  someTask = async (taskData) => { }
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+- This does still require some native code.
+  - You need to extend ~HeadlessJsTaskService~ and override ~getTaskConfig~.
+  - Then add the service to your ~AndroidManifest.xml~ file
+
+#+BEGIN_SRC java
+  public class MyTaskService extends HeadlessJsTaskService {
+
+      @Override
+      protected @Nullable HeadlessJsTaskConfig getTaskConfig(Intent intent) {
+          Bundle extras = intent.getExtras();
+          if (extras != null) {
+              return new HeadlessJsTaskConfig("SomeTaskName",Arguments.fromBundle(extras),5000,false );
+          }
+          return null;
+      }
+  }
+#+END_SRC
+
+#+BEGIN_SRC xml
+  <service android:name="com.example.MyTaskService" />
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+- Starting your service
+
+#+BEGIN_SRC java
+  Intent service = new Intent(getApplicationContext(), MyTaskService.class);
+  Bundle bundle = new Bundle();
+
+  bundle.putString("foo", "bar");
+  service.putExtras(bundle);
+
+  getApplicationContext().startService(service);
+#+END_SRC
+
+
+- In MAD Talk, ~github.com/mad-app/mad-talk/mobile/android/app/src/main/AndroidManifest.xml~.
+  - Notification service is a headless service, but it uses ~IntentService~ from ~android.app.IntentService~.
+
+#+BEGIN_SRC xml
+  <service android:name=".NotificationDismissService"
+                android:enabled="true"
+                android:exported="false" />
+#+END_SRC
+
+*** Retries
+    :PROPERTIES:
+    :BEAMER_opt: allowframebreaks,label=
+    :END:
+
+- By default, the headless JS task will not perform any retries.
+  - In order to do so, you need to create a ~HeadlessJsRetryPolicy~.
+  - ~LinearCountingRetryPolicy~ allows you to specify a maximum number of retries.
+  - A retry attempt will only be made when a specific ~Error~ is thrown.
+
+#+BEGIN_SRC java
+  HeadlessJsRetryPolicy retryPolicy = new LinearCountingRetryPolicy(
+                                                                    3, // Max number of retry attempts
+                                                                    1000 // Delay between each retry attempt
+                                                                    );
+
+  return new HeadlessJsTaskConfig(
+                                  'SomeTaskName',
+                                  Arguments.fromBundle(extras),
+                                  5000,
+                                  false,
+                                  retryPolicy
+                                  );
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+- Example for throw ~Error~
+
+#+BEGIN_SRC js
+  import {HeadlessJsTaskError} from 'HeadlessJsTask';
+
+  module.exports = async (taskData) => {
+      const condition = ...;
+      if (!condition) {
+          throw new HeadlessJsTaskError();
+      }
+  };
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+**** Caveats                                                   :B_alertblock:
+     :PROPERTIES:
+     :BEAMER_env: alertblock
+     :END:
+- By default, your app will crash if you try to run a task while the app is in the foreground. 
+- If you start your service from a ~BroadcastReceiver~, make sure to call ~HeadlessJsTaskService.acquireWakeLockNow()~ before returning from ~onReceive()~
+
+*** Example usage
+    :PROPERTIES:
+    :BEAMER_opt: allowframebreaks,label=
+    :END:
+
+- Following lines shows part of Android manifest file for registering broadcast receiver.
+  - Broadcast receiver then handles intent that was broadcasted in ~onReceive~ function.
+  - Check whether your app is on foreground or not in ~onReceive~.
+
+#+BEGIN_SRC xml
+  <receiver android:name=".NetworkChangeReceiver" >
+    <intent-filter>
+      <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+    </intent-filter>
+  </receiver>
+#+END_SRC
+
+#+BEAMER: \framebreak
+- If app is not on foreground we can prepare our intent to be started.
+
+#+BEGIN_SRC java
+  public class NetworkChangeReceiver extends BroadcastReceiver {
+
+      @Override
+      public void onReceive(final Context context, final Intent intent) {
+          /**
+             This part will be called everytime network connection is changed
+             e.g. Connected -> Not Connected
+          ,**/
+          if (!isAppOnForeground((context))) {
+              /**
+                 We will start our service and send extra info about
+                 network connections
+              ,**/
+              boolean hasInternet = isNetworkAvailable(context);
+              Intent serviceIntent = new Intent(context, MyTaskService.class);
+              serviceIntent.putExtra("hasInternet", hasInternet);
+              context.startService(serviceIntent);
+              HeadlessJsTaskService.acquireWakeLockNow(context);
+          }
+      }
+  }
+#+END_SRC
+
+** Publishing to Google Play Store
+*** Generating an upload key
+- Android requires that all apps be digitally signed with a certificate before they can be installed.
+  - For more details, [[https://developer.android.com/tools/publishing/app-signing.html][Signing Your Applications]] can be referred.
+  - Before your application binary is uploaded to Google Play it needs to be signed with an upload key.
+
+#+BEGIN_SRC shell
+  keytool -genkeypair -v -keystore my-upload-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+#+END_SRC
+
+*** Setting up Gradle variables
+    :PROPERTIES:
+    :BEAMER_opt: allowframebreaks,label=
+    :END:
+1. Place the ~my-upload-key.keystore~ file under the ~android/app~ directory in your project folder.
+2. Edit the file ~~/.gradle/gradle.properties~ or ~android/gradle.properties~, and add the following 
+
+#+BEGIN_SRC shell
+  MYAPP_UPLOAD_STORE_FILE=my-upload-key.keystore
+  MYAPP_UPLOAD_KEY_ALIAS=my-key-alias
+  MYAPP_UPLOAD_STORE_PASSWORD=*****
+  MYAPP_UPLOAD_KEY_PASSWORD=*****
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+3. [@3] Adding signing config to your app's Gradle config
+
+#+BEGIN_SRC shell
+  android {
+      defaultConfig { ... }
+      signingConfigs {
+          release {
+              if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                     storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                     storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                     keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                     keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+                 }
+          }
+      }
+      buildTypes {
+          release {
+              signingConfig signingConfigs.release
+          }
+      }
+  }
+#+END_SRC
+
+4. [@4] Generating the release APK
+#+BEGIN_SRC shell
+   cd android
+   ./gradlew bundleRelease
+#+END_SRC
+
+#+BEAMER: \framebreak
+
+In Mad Talk, signing is configured in ~android/app/build.gradle~.
+
+#+BEAMER: \vspace*{2em}
+
+#+BEGIN_SRC shell
+  signingConfigs {
+      release {
+          if (project.hasProperty('MATTERMOST_RELEASE_STORE_FILE')) {
+                 storeFile file(MATTERMOST_RELEASE_STORE_FILE)
+                 storePassword MATTERMOST_RELEASE_PASSWORD
+                 keyAlias MATTERMOST_RELEASE_KEY_ALIAS
+                 keyPassword MATTERMOST_RELEASE_PASSWORD
+             }
+      }
+  }
+#+END_SRC
+
+
+
+** Removing Default Permissions
+
+*** Removing Default Permissions.
+    :PROPERTIES:
+    :BEAMER_opt: allowframebreaks,label=
+    :END:
+
+| Permissions                               | Descriptions             |
+|-------------------------------------------+--------------------------|
+| android.permission.INTERNET               | Required for debug mode  |
+| android.permission.SYSTEM_ALERT_WINDOW    | Required for debug mode  |
+| android.permission.READ_PHONE_STATE       | Not required for either. |
+| android.permission.WRITE_EXTERNAL_STORAGE | Not required for either. |
+| android.permission.READ_EXTERNAL_STORAGE  | Not required for either  |
+
+#+BEAMER: \framebreak
+- Use ~tools:node="remove"~ attribute, to make sure it gets removed during build. 
+  - Write them into ~android/app/src/main/AndroidManifest.xml~ file.
+
+#+BEGIN_SRC xml
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+            package="com.myappid"
++           xmlns:tools="http://schemas.android.com/tools"
+            >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
++   <uses-permission tools:node="remove" android:name="android.permission.READ_PHONE_STATE" />
++   <uses-permission tools:node="remove" android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
++   <uses-permission tools:node="remove" android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher"
+                 android:allowBackup="false" android:theme="@style/AppTheme">
+      <activity android:name=".MainActivity" android:label="@string/app_name" 
+                android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+                android:windowSoftInputMode="adjustResize">
+        <intent-filter>
+          <action android:name="android.intent.action.MAIN" />
+          <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+      </activity>
+      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+    </application>
+
+  </manifest>
+#+END_SRC
